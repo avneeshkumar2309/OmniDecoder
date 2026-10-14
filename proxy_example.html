@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>OmniDecoder - Proxy Example</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>body{font-family:Inter,system-ui,Arial;padding:18px}pre{background:#0b1220;color:#dff;padding:12px;border-radius:6px}</style>
+</head>
+<body>
+  <h2>Calling Gemini via Local Proxy (Safe)</h2>
+  <p>This page demonstrates calling the local proxy <code>http://localhost:3000/generate/{model}</code>.
+  The proxy should be started with your GEMINI_API_KEY on the server and CORS enabled.</p>
+
+  <label>Model: <input id="model" value="gemini-1.5-flash" /></label>
+  <br/><br/>
+  <textarea id="payload" rows="6" cols="80">SGVsbG8gV29ybGQ=</textarea>
+  <br/><br/>
+  <button id="btn">Send to Proxy</button>
+
+  <h3>Response</h3>
+  <pre id="out">(no response yet)</pre>
+
+  <script>
+    const btn = document.getElementById('btn');
+    btn.addEventListener('click', async () => {
+      const model = document.getElementById('model').value.trim();
+      const payload = document.getElementById('payload').value;
+      const proxyUrl = window.OmniConfig?.GEMINI_PROXY_URL || 'http://localhost:3000';
+      const url = `${proxyUrl.replace(/\/+$/,'')}/generate/${encodeURIComponent(model)}`;
+
+      const body = {
+        // Use the same body shape decoder.js expects when calling the proxy
+        contents: [{ parts: [{ text: `Analyze payload:\n\n${payload}` }] }],
+        generationConfig: { maxOutputTokens: 512, temperature: 0.0 }
+      };
+
+      try {
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const text = await resp.text();
+        document.getElementById('out').textContent = `Status: ${resp.status}\n\n` + text;
+      } catch (err) {
+        document.getElementById('out').textContent = 'Fetch error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>

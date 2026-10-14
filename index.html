@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OmniDecoder — Advanced Encoding & Steganography Inspection Platform</title>
+  <meta name="description" content="OmniDecoder is a forensic web platform for detecting zero-width steganography, Base64 covert padding bit extraction, custom alphabet frequency analysis, entropy visualization, and recursive multi-layer decoding." />
+  <meta name="theme-color" content="#050812" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header class="app-header">
+  <div class="logo-icon">🔍</div>
+  <div class="logo-text">
+    <h1>OmniDecoder</h1>
+    <small>Advanced Encoding &amp; Steganography Inspection</small>
+  </div>
+  <div class="header-badges">
+    <span class="badge badge-cyan">Zero-Width</span>
+    <span class="badge badge-purple">Steganography</span>
+    <span class="badge badge-green">Forensic</span>
+  </div>
+</header>
+
+<!-- ═══════════════════════ MAIN LAYOUT ═══════════════════════ -->
+<div class="main-layout">
+
+  <!-- ─────────── LEFT: Input Panel ─────────── -->
+  <aside class="input-panel">
+    <div class="panel-header">
+      <div class="panel-icon cyan">📥</div>
+      <h2>Input &amp; Modules</h2>
+    </div>
+
+    <div class="input-area">
+      <!-- Payload Input -->
+      <div>
+        <label for="payload-input">Input Payload</label>
+        <textarea id="payload-input" placeholder="Paste your encoded string, ciphertext, Base64, hex, or suspicious text here...&#10;&#10;Tip: Try pasting something with zero-width characters or Base64 padding." spellcheck="false"></textarea>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-primary" id="btn-run" onclick="runCurrentModule()">▶ Analyze</button>
+        <button class="btn btn-secondary" onclick="loadSample()">🎲 Sample</button>
+        <button class="btn btn-ghost" onclick="clearAll()" title="Clear">✕ Clear</button>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-label">Analysis Modules</div>
+
+      <!-- Module selector -->
+      <nav class="module-selector" id="module-selector">
+        <button class="module-btn active" id="btn-module-0" onclick="selectModule(0)">
+          <span class="module-icon">👁️</span>
+          <span class="module-info">
+            <span class="module-name">Zero-Width Inspector</span>
+            <span class="module-desc">Detect hidden steganography bits</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+        <button class="module-btn purple-mode" id="btn-module-1" onclick="selectModule(1)">
+          <span class="module-icon">🔐</span>
+          <span class="module-info">
+            <span class="module-name">Base64 Padding Bits</span>
+            <span class="module-desc">Extract covert padding data</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+        <button class="module-btn" id="btn-module-2" onclick="selectModule(2)">
+          <span class="module-icon">🔤</span>
+          <span class="module-info">
+            <span class="module-name">Custom Alphabet Tuner</span>
+            <span class="module-desc">Auto-detect Base-X variants</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+        <button class="module-btn" id="btn-module-3" onclick="selectModule(3)">
+          <span class="module-icon">📊</span>
+          <span class="module-info">
+            <span class="module-name">Shannon Entropy</span>
+            <span class="module-desc">Forensic binary inspection</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+        <button class="module-btn" id="btn-module-4" onclick="selectModule(4)">
+          <span class="module-icon">🔁</span>
+          <span class="module-info">
+            <span class="module-name">Recursive Pipeline</span>
+            <span class="module-desc">Multi-layer automated decode</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+
+        <div class="divider"></div>
+        <div class="section-label">Brute Force</div>
+
+        <button class="module-btn" id="btn-module-5" onclick="selectModule(5)">
+          <span class="module-icon">⚡</span>
+          <span class="module-info">
+            <span class="module-name">XOR Brute Force</span>
+            <span class="module-desc">Try all single-byte XOR keys</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+        <button class="module-btn" id="btn-module-6" onclick="selectModule(6)">
+          <span class="module-icon">🔄</span>
+          <span class="module-info">
+            <span class="module-name">Caesar / ROT Solver</span>
+            <span class="module-desc">All 26 rotation shifts scored</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+
+        <div class="divider"></div>
+        <div class="section-label">Pattern Analysis</div>
+
+        <button class="module-btn" id="btn-module-7" onclick="selectModule(7)">
+          <span class="module-icon">🧹</span>
+          <span class="module-info">
+            <span class="module-name">Noise Pattern Stripper</span>
+            <span class="module-desc">Remove interleaved visible noise</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+
+        <div class="divider"></div>
+        <div class="section-label ai-label">✦ AI Intelligence</div>
+
+        <button class="module-btn ai-btn" id="btn-module-8" onclick="selectModule(8)">
+          <span class="module-icon ai-icon">🤖</span>
+          <span class="module-info">
+            <span class="module-name ai-name">AI Auto-Analyzer</span>
+            <span class="module-desc">Local AI + Gemini 2.5 Flash</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+
+        <div class="divider"></div>
+        <div class="section-label" style="color:var(--red)">🔥 Cracking Tools</div>
+
+        <button class="module-btn" id="btn-module-9" onclick="selectModule(9)" style="border-color:rgba(248,113,113,0.2)">
+          <span class="module-icon" style="background:rgba(248,113,113,0.15)">#️⃣</span>
+          <span class="module-info">
+            <span class="module-name" style="color:var(--red)">Hash Analyzer & Cracker</span>
+            <span class="module-desc">Identify + crack MD5, SHA, bcrypt...</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+
+        <button class="module-btn" id="btn-module-10" onclick="selectModule(10)" style="border-color:rgba(248,113,113,0.2)">
+          <span class="module-icon" style="background:rgba(248,113,113,0.15)">🔓</span>
+          <span class="module-info">
+            <span class="module-name" style="color:var(--red)">Encryption Breaker</span>
+            <span class="module-desc">Vigenere, Affine, Rail Fence, ROT-N</span>
+          </span>
+          <span class="module-arrow">›</span>
+        </button>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- ─────────── RIGHT: Output Panel ─────────── -->
+  <main class="output-panel">
+    <div class="output-header">
+      <div class="output-title">
+        <span class="indicator"></span>
+        <span id="output-module-title">Select a module &amp; click Analyze</span>
+      </div>
+      <div class="output-actions">
+        <button class="btn btn-secondary btn-sm" onclick="copyOutput()" id="btn-copy">📋 Copy Output</button>
+      </div>
+    </div>
+
+    <div class="output-body" id="output-body">
+      <!-- Welcome state -->
+      <div class="empty-state" id="welcome-state">
+        <div class="empty-icon">🛰️</div>
+        <div class="empty-title">OmniDecoder Ready</div>
+        <div class="empty-desc">Paste a payload in the left panel and select a module to begin forensic analysis. Designed to catch what standard decoders miss.</div>
+        <div class="welcome-grid">
+          <div class="welcome-module" onclick="selectModule(0);runCurrentModule()">
+            <div class="welcome-module-icon">👁️</div>
+            <div class="welcome-module-name">Zero-Width</div>
+            <div class="welcome-module-desc">Detect hidden Unicode steganography</div>
+          </div>
+          <div class="welcome-module" onclick="selectModule(1);runCurrentModule()">
+            <div class="welcome-module-icon">🔐</div>
+            <div class="welcome-module-name">Padding Bits</div>
+            <div class="welcome-module-desc">Covert Base64 padding extraction</div>
+          </div>
+          <div class="welcome-module" onclick="selectModule(3);runCurrentModule()">
+            <div class="welcome-module-icon">📊</div>
+            <div class="welcome-module-name">Entropy</div>
+            <div class="welcome-module-desc">Shannon entropy forensics</div>
+          </div>
+          <div class="welcome-module" onclick="selectModule(4);runCurrentModule()">
+            <div class="welcome-module-icon">🔁</div>
+            <div class="welcome-module-name">Auto-Pipeline</div>
+            <div class="welcome-module-desc">Recursive multi-layer decode</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- ════════════════════ JAVASCRIPT ════════════════════ -->
+<script src="decoder.js"></script>
+<script>
+// ─── State ────────────────────────────────────────────────────────
+let currentModule = 0;
+const OD = window.OmniDecoder;
+
+const MODULE_NAMES = [
+  'Zero-Width Character Inspector',
+  'Base64 Covert Padding Analyzer',
+  'Custom Alphabet & Base-X Tuner',
+  'Shannon Entropy & Binary Inspector',
+  'Recursive Deep Decoding Pipeline',
+  'XOR Single-Byte Brute Force',
+  'Caesar / ROT Cipher Solver',
+  'Interleaved Noise Pattern Stripper',
+  'AI Auto-Analyzer',
+  'Hash Analyzer & Cracker',
+  'Encryption Breaker',
+];
+
+const SAMPLES = [
+  'Hello\u200B\u200C\u200C\u200B\u200C\u200B\u200B\u200B\u200B\u200C\u200B\u200C\u200B\u200C\u200B\u200BWorld',
+  'SGVsbG8gV29ybGQ=',
+  '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy',
+  'aef3c29b817d04e65fa32890bc17d3ac',
+  'SGVsbG8lMjBXb3JsZA==',
+  String.fromCharCode(...'CTF{secret_flag}'.split('').map(c => c.charCodeAt(0) ^ 0x42)),
+  'Uryyb, Jbeyq! Guvf vf n frperg zrffntr.',
+  'CvVv:vVv\\vVvuvVvsvVvevVvrvVvsvVv\\vVvPvVvuvVvbvVvlvVvivVvcvVv\\vVvDvVvovVvcvVvuvVvmvVvevVvnvVvtvVvsvVv\\vVvxvVvmvVvlvVv.vVvxvVvmvVvlvVv',
+  btoa('48656c6c6f2c20576f726c6421'),
+  // Module 9 - SHA-256 of 'password'
+  '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
+  // Module 10 - Vigenere encrypted
+  'Rijvs, Ambpb! Hvmj zj c jrtpte dtjjeks.',
+];
+
+// ─── Module Selection ─────────────────────────────────────────────
+function selectModule(idx) {
+  currentModule = idx;
+  document.querySelectorAll('.module-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === idx);
+    // BUG-15 fix: keep purple-mode ONLY on button 1 when it is the active button.
+    // Without this the class lingers on inactive buttons causing stale purple icon styling.
+    if (i === 1) btn.classList.toggle('purple-mode', i === idx);
+  });
+  document.getElementById('output-module-title').textContent = MODULE_NAMES[idx] || 'Analysis';
+}
+
+// ─── Load Sample ──────────────────────────────────────────────────
+function loadSample() {
+  document.getElementById('payload-input').value = SAMPLES[currentModule] || SAMPLES[0];
+}
+
+// ─── Clear ────────────────────────────────────────────────────────
+function clearAll() {
+  document.getElementById('payload-input').value = '';
+  document.getElementById('output-body').innerHTML = `<div class="empty-state" id="welcome-state">
+    <div class="empty-icon">🛰️</div>
+    <div class="empty-title">Cleared</div>
+    <div class="empty-desc">Paste new input and click Analyze.</div>
+  </div>`;
+}
+
+// ─── Copy Output ──────────────────────────────────────────────────
+function copyOutput() {
+  const text = document.getElementById('output-body').innerText;
+  navigator.clipboard.writeText(text).then(() => showToast('✅ Output copied to clipboard'));
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('✅ Copied!'));
+}
+
+function showToast(msg) {
+  const old = document.querySelector('.copy-toast');
+  if (old) old.remove();
+  const el = document.createElement('div');
+  el.className = 'copy-toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
+// ─── Run Current Module ───────────────────────────────────────────
+function runCurrentModule() {
+  const input = document.getElementById('payload-input').value;
+  if (!input.trim()) {
+    loadSample();
+    setTimeout(runCurrentModule, 50);
+    return;
+  }
+
+  document.getElementById('output-module-title').textContent = MODULE_NAMES[currentModule];
+  document.getElementById('welcome-state')?.remove();
+
+  const body = document.getElementById('output-body');
+  body.innerHTML = '<div style="display:flex;justify-content:center;padding:60px"><div class="spinner"></div></div>';
+
+  setTimeout(() => {
+    try {
+      switch (currentModule) {
+        case 0: body.innerHTML = renderZeroWidth(input);    break;
+        case 1: body.innerHTML = renderBase64Padding(input); break;
+        case 2: body.innerHTML = renderCustomAlphabet(input); break;
+        case 3: body.innerHTML = renderEntropy(input);      break;
+        case 4: body.innerHTML = renderPipeline(input);     break;
+        case 5: body.innerHTML = renderXORBrute(input);     break;
+        case 6: body.innerHTML = renderCaesar(input);       break;
+        case 7: body.innerHTML = renderNoiseStrip(input);   break;
+        case 8: renderAutoAnalyzer(input, body);            break;
+        case 9: renderHashCracker(input, body);             break;
+        case 10: renderEncryptionBreaker(input, body);      break;
+        default: body.innerHTML = '<div class="empty-state"><div class="empty-title">Unknown module</div></div>';
+      }
+    } catch (e) {
+      body.innerHTML = renderError(e.message);
+    }
+  }, 40);
+}
+
+// ─── Helper: escape HTML ──────────────────────────────────────────
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderError(msg) {
+  return `<div class="card"><div class="alert alert-red"><span class="alert-icon">⚠️</span><div><strong>Error:</strong> ${esc(msg)}</div></div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 0: ZERO-WIDTH INSPECTOR
+// ═══════════════════════════════════════════════════════════════════
+function renderZeroWidth(input) {
+  const r = OD.inspectZeroWidth(input);
+  let html = '';
+
+  // Summary stats
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon cyan">👁️</div>
+      <div class="card-title cyan">Zero-Width Character Inspector</div>
+      ${r.totalHidden > 0 ? '<span class="tag tag-red">⚠️ Hidden Data Found</span>' : '<span class="tag tag-green">✅ Clean</span>'}
+    </div>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <span class="stat-label">Hidden Chars</span>
+        <span class="stat-value ${r.totalHidden > 0 ? 'red' : 'green'}">${r.totalHidden}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Bit Stream</span>
+        <span class="stat-value cyan">${r.bitStream.length} bits</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Visible Chars</span>
+        <span class="stat-value purple">${r.cleanedText.length}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Hidden Text</span>
+        <span class="stat-value yellow">${r.hiddenText ? esc(r.hiddenText) : '—'}</span>
+      </div>
+    </div>`;
+
+  if (r.totalHidden > 0) {
+    // Annotated view
+    html += `<div class="card-header" style="margin-top:18px;margin-bottom:12px;border-top:1px solid var(--border);padding-top:16px;border-bottom:none;">
+      <span class="card-title purple">Annotated View</span>
+      <span style="font-size:0.75rem;color:var(--text-muted);margin-left:8px;">Purple = zero-width char</span>
+    </div>
+    <div class="annotated-text">`;
+
+    for (let i = 0; i < input.length; i++) {
+      const ch = input[i];
+      const info = OD.ZW_MAP[ch];
+      if (info) {
+        html += `<span class="zw-highlight" title="${esc(info.hex)} \u2014 ${esc(info.name)}${info.bit !== null ? ' (bit: ' + esc(String(info.bit)) + ')' : ''}">${info.name}</span>`;
+      } else {
+        html += esc(ch);
+      }
+    }
+    html += `</div>`;
+  }
+  html += `</div>`;
+
+  // Bit stream card
+  if (r.bitStream.length > 0) {
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon purple">🔢</div>
+        <div class="card-title purple">Extracted Bit Stream</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(r.bitStream)})">📋 Copy</button>
+      </div>
+      <div class="bit-stream">`;
+    for (const bit of r.bitStream) {
+      html += `<span class="bit-${bit}">${bit}</span>`;
+    }
+    html += `</div>`;
+
+    if (r.hiddenText) {
+      html += `<div class="alert alert-purple" style="margin-top:16px">
+        <span class="alert-icon">🔓</span>
+        <div>
+          <strong>Decoded Hidden Text:</strong><br/>
+          <code style="color:var(--cyan)">${esc(r.hiddenText)}</code>
+        </div>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  // Found chars table
+  if (r.found.length > 0) {
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon purple">📋</div>
+        <div class="card-title purple">Hidden Character Log</div>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Position</th><th>Code Point</th><th>Name</th><th>Bit</th></tr></thead>
+        <tbody>`;
+    // BUG-01 fix: use indexed loop instead of r.found.indexOf(ch) which is O(n²)
+    for (let i = 0; i < r.found.length; i++) {
+      const ch = r.found[i];
+      html += `<tr>
+        <td style="color:var(--text-muted)">${i + 1}</td>
+        <td>${ch.index}</td>
+        <td><span class="tag tag-purple">${ch.hex}</span></td>
+        <td>${ch.name}</td>
+        <td style="color:${ch.bit !== null ? 'var(--cyan)' : 'var(--text-muted)'}">${ch.bit !== null ? ch.bit : '\u2014'}</td>
+      </tr>`;
+    }
+    html += `</tbody></table></div>`;
+  }
+
+  // Cleaned output
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon green">🧹</div>
+      <div class="card-title green">Cleaned Output</div>
+      <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(r.cleanedText)})">📋 Copy</button>
+    </div>
+    <div class="code-block">${esc(r.cleanedText)}</div>
+  </div>`;
+
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 1: BASE64 PADDING ANALYZER
+// ═══════════════════════════════════════════════════════════════════
+function renderBase64Padding(input) {
+  const r = OD.analyzeBase64Padding(input.trim());
+  if (r.error) return renderError(r.error);
+
+  let html = `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon purple">🔐</div>
+      <div class="card-title purple">Base64 Covert Padding Analyzer</div>
+      ${r.hasCovertData ? '<span class="tag tag-red">⚠️ Covert Data Found</span>' : '<span class="tag tag-green">✅ Standard Padding</span>'}
+      ${r.isUrlSafe ? '<span class="tag tag-cyan">URL-Safe</span>' : '<span class="tag tag-purple">Standard</span>'}
+    </div>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <span class="stat-label">Padding Chars</span>
+        <span class="stat-value ${r.padCount > 0 ? 'yellow' : 'green'}">${r.padCount}</span>
+        <span class="stat-sub">${r.padCount === 1 ? '2 covert bits possible' : r.padCount === 2 ? '4 covert bits possible' : 'No padding'}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Covert Bits</span>
+        <span class="stat-value ${r.hasCovertData ? 'red' : 'green'}">${r.covertBits || '—'}</span>
+        <span class="stat-sub">${r.hasCovertData ? 'Non-zero — potential hidden data' : 'Zero — no covert data'}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Payload Chars</span>
+        <span class="stat-value cyan">${r.payloadLength}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Covert Char</span>
+        <span class="stat-value ${r.hasCovertData ? 'orange' : 'green'}">${r.covertText ? esc(r.covertText) : '—'}</span>
+      </div>
+    </div>`;
+
+  if (r.hasCovertData) {
+    html += `<div class="alert alert-red">
+      <span class="alert-icon">🚨</span>
+      <div>
+        <strong>Covert data detected!</strong> The last Base64 character before padding contains non-zero unused bits.
+        Extracted bits: <code>${r.covertBits}</code>
+        ${r.covertText ? `→ Decoded as: <code style="color:var(--cyan)">${esc(r.covertText)}</code>` : ''}
+      </div>
+    </div>`;
+  }
+  html += `</div>`;
+
+  // Analysis steps
+  if (r.analysisSteps.length > 0) {
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon cyan">🔬</div>
+        <div class="card-title cyan">Bit-Level Analysis</div>
+      </div>`;
+    for (const step of r.analysisSteps) {
+      html += `<div class="stat-box" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <span class="stat-label">${step.label}: <code style="color:var(--cyan)">${esc(step.char)}</code> (value ${step.value})</span>
+        </div>
+        <div style="margin-top:10px;font-size:0.8rem;color:var(--text-secondary)">
+          Full 6-bit binary: <code style="color:var(--text-primary)">${step.binaryFull}</code>
+          &nbsp;|&nbsp; Used bits: <code style="color:var(--green)">${step.usedBits}</code>
+          &nbsp;|&nbsp; Covert (unused) bits: <code style="color:var(--red)">${step.covertBits}</code>
+          &nbsp;|&nbsp; Covert value: <code style="color:var(--orange)">${step.covertValue}</code>
+        </div>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  // Decoded output
+  if (r.decoded) {
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon green">📄</div>
+        <div class="card-title green">Decoded Payload</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(r.decoded)})">📋 Copy</button>
+      </div>
+      <div class="code-block">${esc(r.decoded)}</div>
+    </div>`;
+  }
+
+  // Character frequency
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon purple">📊</div>
+      <div class="card-title purple">Character Frequency</div>
+    </div>
+    <div class="freq-grid">`;
+  const entries = Object.entries(r.charFreq).sort((a,b) => b[1]-a[1]).slice(0, 48);
+  for (const [ch, cnt] of entries) {
+    html += `<div class="freq-cell"><div class="freq-char">${esc(ch)}</div><div class="freq-count">${cnt}×</div></div>`;
+  }
+  html += `</div></div>`;
+
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 2: CUSTOM ALPHABET TUNER
+// ═══════════════════════════════════════════════════════════════════
+function renderCustomAlphabet(input) {
+  const r = OD.analyzeCustomAlphabet(input);
+  let html = `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon cyan">🔤</div>
+      <div class="card-title cyan">Custom Alphabet &amp; Base-X Auto-Tuner</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <span class="stat-label">Input Length</span>
+        <span class="stat-value cyan">${r.inputLength}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Unique Chars</span>
+        <span class="stat-value purple">${r.uniqueCount}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Best Match</span>
+        <span class="stat-value yellow">${r.matches.length > 0 ? r.matches[0].coverage + '%' : '?'}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Decode Results</span>
+        <span class="stat-value green">${r.decodeResults.length}</span>
+      </div>
+    </div>
+  </div>`;
+
+  // Alphabet matches
+  html += `<div class="card">
+    <div class="card-header"><div class="panel-icon green">💡</div><div class="card-title green">What this means</div></div>
+    <div class="alert alert-cyan"><span class="alert-icon">→</span><div>${esc(r.recommendation)}</div></div>
+    ${r.best ? `<div style="font-size:0.82rem;color:var(--text-secondary);margin-top:10px">Best decoded candidate: <strong style="color:var(--cyan)">${esc(r.best.format)}</strong> · ${r.best.printableRatio}% readable characters.</div>` : ''}
+  </div>`;
+
+  // Alphabet matches
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon purple">🎯</div>
+      <div class="card-title purple">Alphabet Match Results</div>
+    </div>`;
+
+  if (r.matches.length === 0) {
+    html += `<div class="alert alert-yellow"><span class="alert-icon">⚠️</span>No standard Base-X alphabet match found. Possible custom or encrypted alphabet.</div>`;
+  } else {
+    for (const m of r.matches) {
+      const coveragePct = m.coverage;
+      html += `<div class="alpha-match">
+        <div>
+          <div class="alpha-name">${esc(m.name)}</div>
+          <div class="alpha-base">Base-${m.base} &nbsp;·&nbsp; ${m.contained ? '✅ Fully contained' : `⚡ ${coveragePct}% character overlap`}</div>
+          <div class="coverage-bar" style="margin-top:6px">
+            <div class="coverage-fill" style="width:${coveragePct}%"></div>
+          </div>
+        </div>
+        <span class="tag ${coveragePct === 100 ? 'tag-green' : 'tag-yellow'}">${coveragePct}%</span>
+      </div>`;
+    }
+  }
+  html += `</div>`;
+
+  // Readable decoded text only. Binary candidates are handled separately below.
+  if (r.readableResults.length > 0) {
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon green">✅</div>
+        <div class="card-title green">Decoded Results</div>
+      </div>`;
+    for (const dr of r.readableResults) {
+      html += `<div style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span class="tag tag-cyan">${esc(dr.format)}</span>
+          <span class="tag ${dr.printableRatio >= 90 ? 'tag-green' : 'tag-yellow'}">${dr.printableRatio}% readable</span>
+          <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(dr.text)})">📋 Copy</button>
+        </div>
+        <div class="code-block">${esc(dr.text)}</div>
+        <div style="font-size:0.76rem;color:var(--text-secondary);margin-top:6px">${esc(dr.verdict)}</div>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  if (r.binaryCandidates.length > 0) {
+    html += `<div class="card">
+      <div class="card-header"><div class="panel-icon yellow">🧪</div><div class="card-title yellow">Non-text decode candidates</div><span class="tag tag-yellow">${r.binaryCandidates.length} candidate${r.binaryCandidates.length !== 1 ? 's' : ''}</span></div>
+      <div class="alert alert-yellow"><span class="alert-icon">ℹ️</span><div>These results are deliberately not displayed as text because they are mostly non-printable bytes. A character-set match alone does not prove an encoding.</div></div>`;
+    for (const dr of r.binaryCandidates) {
+      html += `<details style="margin-top:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px"><summary style="cursor:pointer;color:var(--text-primary)"><strong>${esc(dr.format)}</strong> — ${dr.byteLength} bytes, ${dr.printableRatio}% readable, entropy ${dr.entropy}/8</summary><div style="font-size:0.78rem;color:var(--text-secondary);margin:10px 0 6px">First ${Math.min(dr.byteLength, 32)} bytes in hexadecimal:</div><div class="code-block">${esc(dr.hexPreview)}${dr.byteLength > 32 ? ' …' : ''}</div><div style="font-size:0.76rem;color:var(--text-secondary);margin-top:7px">${esc(dr.verdict)}</div></details>`;
+    }
+    html += `</div>`;
+  }
+
+  // Character frequency
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon cyan">📊</div>
+      <div class="card-title cyan">Character Frequency Analysis</div>
+    </div>
+    <div class="freq-grid">`;
+  for (const [ch, cnt] of r.sortedFreq.slice(0, 64)) {
+    html += `<div class="freq-cell"><div class="freq-char">${esc(ch)}</div><div class="freq-count">${cnt}×</div></div>`;
+  }
+  html += `</div></div>`;
+
+  // All unique chars
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon purple">🧩</div>
+      <div class="card-title purple">Unique Character Set (${r.uniqueCount})</div>
+    </div>
+    <div class="code-block">${esc(r.charArray.join(' '))}</div>
+  </div>`;
+
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 3: SHANNON ENTROPY
+// ═══════════════════════════════════════════════════════════════════
+function renderEntropy(input) {
+  // Auto-detect input type or let user choose
+  const r = OD.inspectEntropy(input);
+  if (r.error) return renderError(r.error);
+
+  const entropyPct = (r.entropyNum / 8 * 100).toFixed(1);
+
+  let html = `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon yellow">📊</div>
+      <div class="card-title yellow">Shannon Entropy &amp; Forensic Inspector</div>
+      <span class="tag" style="background:rgba(0,0,0,0.3);border:1px solid var(--border);color:var(--text-secondary)">${esc(r.detectedType.toUpperCase())} input</span>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:0.8rem;color:var(--text-secondary)">Shannon Entropy</span>
+        <span style="font-family:'JetBrains Mono',monospace;color:${r.classColor};font-weight:700">${r.entropy} bits/byte</span>
+      </div>
+      <div class="entropy-bar-container">
+        <div class="entropy-bar-fill" style="width:${entropyPct}%"></div>
+      </div>
+      <div style="font-size:0.78rem;color:${r.classColor};margin-top:4px">${esc(r.classification)}</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <span class="stat-label">Byte Count</span>
+        <span class="stat-value cyan">${r.byteCount}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Entropy</span>
+        <span class="stat-value" style="color:${r.classColor}">${r.entropy}</span>
+        <span class="stat-sub">/ 8.0 max</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Printable ASCII</span>
+        <span class="stat-value ${parseFloat(r.printableRatio) > 70 ? 'green' : 'orange'}">${r.printableRatio}%</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Magic Hits</span>
+        <span class="stat-value ${r.magicHits.length > 0 ? 'yellow' : 'green'}">${r.magicHits.length}</span>
+      </div>
+    </div>
+  </div>`;
+
+  html += `<div class="card">
+    <div class="card-header"><div class="panel-icon green">💡</div><div class="card-title green">Plain-English interpretation</div></div>
+    <p style="margin:0 0 10px;color:var(--text-primary);line-height:1.6">${esc(r.plainExplanation)}</p>
+    <div class="alert alert-cyan"><span class="alert-icon">→</span><div><strong>Next step:</strong> ${esc(r.nextStep)}<br><span style="color:var(--text-secondary)">${esc(r.sampleNote)}</span></div></div>
+    <div style="display:flex;gap:18px;font-size:0.8rem;color:var(--text-secondary);margin-top:12px"><span><strong style="color:var(--cyan)">${r.uniqueBytes}</strong> different byte values seen</span><span><strong style="color:var(--cyan)">${r.zeroBytes}</strong> zero bytes</span></div>
+  </div>`;
+
+  // Magic signatures
+  if (r.magicHits.length > 0) {
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon yellow">✨</div>
+        <div class="card-title yellow">File Magic Signatures</div>
+      </div>
+      <div>`;
+    for (const hit of r.magicHits) {
+      html += `<span class="magic-hit">🔮 ${esc(hit)}</span>`;
+    }
+    html += `</div></div>`;
+  }
+
+  // Byte histogram
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon cyan">📈</div>
+      <div class="card-title cyan">Byte Frequency Histogram</div>
+      <span style="font-size:0.72rem;color:var(--text-muted)">256 byte values (0x00–0xFF)</span>
+    </div>
+    <div class="histogram-wrap" id="histogram-bars">`;
+  // BUG-13 fix: avoid spread operator on large arrays (hits argument count limit); use reduce instead
+  const maxCount = r.histogram.reduce((a, b) => Math.max(a, b), 1);
+  for (let i = 0; i < 256; i++) {
+    const h = (r.histogram[i] / maxCount * 100).toFixed(1);
+    const byteHex = '0x' + i.toString(16).padStart(2, '0').toUpperCase();
+    html += `<div class="histogram-bar" style="height:${Math.max(h, 0.5)}%" title="${byteHex}: ${r.histogram[i]} occurrences"></div>`;
+  }
+  html += `</div></div>`;
+
+  // Top bytes
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon purple">🔝</div>
+      <div class="card-title purple">Top 10 Most Frequent Bytes</div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Byte</th><th>Decimal</th><th>Count</th><th>Char</th><th>Distribution</th></tr></thead>
+      <tbody>`;
+  const totalBytes = r.byteCount;
+  for (const { byte, count } of r.topBytes) {
+    const pct = (count / totalBytes * 100).toFixed(1);
+    const printable = byte >= 0x20 && byte <= 0x7E;
+    html += `<tr>
+      <td><span class="tag tag-cyan">0x${byte.toString(16).padStart(2,'0').toUpperCase()}</span></td>
+      <td style="color:var(--text-secondary)">${byte}</td>
+      <td style="color:var(--text-primary);font-weight:600">${count}</td>
+      <td style="color:${printable ? 'var(--green)' : 'var(--text-muted)'}">${printable ? esc(String.fromCharCode(byte)) : '·'}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:80px;height:6px;background:rgba(0,0,0,0.3);border-radius:999px;overflow:hidden">
+            <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--purple-dim));border-radius:999px"></div>
+          </div>
+          <span style="font-size:0.72rem;color:var(--text-muted)">${pct}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }
+  html += `</tbody></table></div>`;
+
+  // Hex preview
+  if (r.bytes.length > 0) {
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon cyan">🗂️</div>
+        <div class="card-title cyan">Hex Preview (first ${r.bytes.length} bytes)</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(r.bytes.map(b => b.toString(16).padStart(2,'0')).join(' '))})">📋 Copy Hex</button>
+      </div>
+      <div class="code-block">`;
+    for (let i = 0; i < r.bytes.length; i++) {
+      if (i > 0 && i % 16 === 0) html += '\n';
+      html += r.bytes[i].toString(16).padStart(2,'0').toUpperCase() + ' ';
+    }
+    html += `</div></div>`;
+  }
+
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 4: RECURSIVE PIPELINE
+// ═══════════════════════════════════════════════════════════════════
+function renderPipeline(input) {
+  const r = OD.runPipeline(input);
+  let html = `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon cyan">🔁</div>
+      <div class="card-title cyan">Recursive Deep Decoding Pipeline</div>
+      ${r.totalSteps > 0 ? `<span class="tag tag-green">✅ ${r.totalSteps} layer${r.totalSteps !== 1 ? 's' : ''} decoded</span>` : '<span class="tag tag-yellow">No decodable layers found</span>'}
+    </div>`;
+
+  if (r.totalSteps === 0) {
+    html += `<div class="alert alert-yellow">
+      <span class="alert-icon">ℹ️</span>
+      <div>No automatic decoders matched this input. The data may be custom-encrypted, binary-only, or already plaintext.</div>
+    </div>`;
+  }
+  html += `</div>`;
+
+  if (r.steps.length > 0) {
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon purple">🪜</div>
+        <div class="card-title purple">Decode Trace</div>
+      </div>
+      <div class="step-trace">`;
+
+    for (const step of r.steps) {
+      const inSnippet = step.input.length > 60 ? step.input.slice(0, 60) + '…' : step.input;
+      const outSnippet = step.output.length > 60 ? step.output.slice(0, 60) + '…' : step.output;
+      html += `<div class="step-item">
+        <div class="step-num">${step.step}</div>
+        <div class="step-content">
+          <div class="step-decoder">${esc(step.decoder)}</div>
+          <div class="step-note">${esc(step.note)} &nbsp;·&nbsp; Entropy: ${step.entropy.toFixed(2)} bits/byte</div>
+          <div class="step-io">
+            <div>
+              <div class="step-io-label">Input</div>
+              <div class="code-block" style="max-height:80px">${esc(inSnippet)}</div>
+            </div>
+            <div>
+              <div class="step-io-label">Output</div>
+              <div class="code-block" style="max-height:80px;border-color:rgba(0,229,255,0.2)">${esc(outSnippet)}</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  // Final output
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon green">🎯</div>
+      <div class="card-title green">Final Decoded Output</div>
+      <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(r.finalOutput)})">📋 Copy</button>
+    </div>
+    <div class="code-block">${esc(r.finalOutput)}</div>
+  </div>`;
+
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 5: XOR BRUTE FORCE
+// ═══════════════════════════════════════════════════════════════════
+function renderXORBrute(input) {
+  const results = OD.xorBruteForce(input);
+  const displayXor = text => text.replace(/[\x00-\x1f\x7f-\xff]/g, ch => `\\x${ch.charCodeAt(0).toString(16).padStart(2,'0').toUpperCase()}`);
+
+  let html = `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon cyan">⚡</div>
+      <div class="card-title cyan">XOR Single-Byte Brute Force</div>
+      <span class="tag tag-green">${results.printableResults} readable candidate${results.printableResults !== 1 ? 's' : ''}</span>
+    </div>
+    <div class="alert alert-cyan">
+      <span class="alert-icon">ℹ️</span>
+      <div>Tested all 256 single-byte XOR keys (0x00–0xFF). Showing results where &gt;75% of output is printable ASCII, sorted by printability score.</div>
+    </div>`;
+
+  if (results.best) {
+    html += `<div class="card" style="border-color:rgba(74,222,128,0.35)">
+      <div class="card-header"><div class="panel-icon green">🎯</div><div class="card-title green">Most likely result</div><span class="tag tag-green">${esc(results.best.key)} · score ${results.best.score.toFixed(1)}</span><button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(results.best.decoded)})">📋 Copy</button></div>
+      <div class="code-block">${esc(displayXor(results.best.decoded))}</div>
+      <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:8px">${results.best.printableRatio}% printable. Verify using context: short input can produce several plausible-looking keys.</div>
+    </div>`;
+  }
+
+  if (results.length === 0) {
+    html += `<div class="alert alert-yellow"><span class="alert-icon">⚠️</span>No printable XOR results found. The data may use multi-byte or custom XOR keys.</div>`;
+  }
+  html += `</div>`;
+
+  if (results.length > 0) {
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon purple">🗝️</div>
+        <div class="card-title purple">All 256 XOR outcomes (ranked)</div>
+      </div>
+      <div class="result-scroll">`;
+    for (const r of results) {
+      html += `<div class="brute-result">
+        <span class="brute-key">${esc(r.key)}</span>
+        <span class="brute-text" title="${esc(displayXor(r.decoded))}">${esc(displayXor(r.decoded))}</span>
+        <span class="brute-score">${r.printableRatio}% · ${r.score.toFixed(1)}</span>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="copyText(${JSON.stringify(r.decoded)})" title="Copy">📋</button>
+      </div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 6: CAESAR / ROT SOLVER
+// ═══════════════════════════════════════════════════════════════════
+function renderCaesar(input) {
+  const results = OD.caesarBruteForce(input);
+
+  let html = `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon purple">🔄</div>
+      <div class="card-title purple">Caesar / ROT Cipher Solver</div>
+      <span class="tag tag-cyan">Best: ROT${results[0].shift} (score ${results[0].score.toFixed(2)})</span>
+    </div>
+    <div class="alert alert-purple">
+      <span class="alert-icon">ℹ️</span>
+      <div>All 26 rotation shifts scored by English letter frequency using chi-squared method. Shift 0 = original, Shift 13 = ROT13.</div>
+    </div>
+    <div style="margin-bottom:10px">
+      <span style="font-size:0.8rem;color:var(--text-secondary)">Best candidate — ROT${results[0].shift}:</span>
+      <div class="code-block" style="margin-top:8px;border-color:rgba(185,128,255,0.3)">${esc(results[0].decoded)}</div>
+    </div>
+  </div>`;
+
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon cyan">📋</div>
+      <div class="card-title cyan">All 26 Shifts</div>
+    </div>
+    <div class="result-scroll">`;
+
+  // BUG-08 fix: use indexed loop — results.indexOf(r) inside a for-of is O(n²)
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    const isTop = i < 3;
+    html += `<div class="brute-result" style="${isTop ? 'border-color:rgba(185,128,255,0.3)' : ''}">
+      <span class="brute-key" style="${isTop ? 'color:var(--purple)' : ''}">ROT${r.shift}</span>
+      <span class="brute-text" title="${esc(r.decoded)}">${esc(r.decoded)}</span>
+      <span class="brute-score">${r.score.toFixed(2)}</span>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="copyText(${JSON.stringify(r.decoded)})" title="Copy">📋</button>
+    </div>`;
+  }
+  html += `</div></div>`;
+
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 7: INTERLEAVED NOISE PATTERN STRIPPER
+// ═══════════════════════════════════════════════════════════════════
+function renderNoiseStrip(input) {
+  const r = OD.detectInterleavedNoise(input);
+
+  if (r.error) {
+    let html = `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon cyan">🧹</div>
+        <div class="card-title cyan">Interleaved Noise Pattern Stripper</div>
+        <span class="tag tag-yellow">⚠️ No Pattern Found</span>
+      </div>
+      <div class="alert alert-yellow">
+        <span class="alert-icon">⚠️</span>
+        <div>${esc(r.error)}</div>
+      </div>`;
+    if (r.candidates && r.candidates.length > 0) {
+      html += `<table class="data-table" style="margin-top:12px">
+        <thead><tr><th>Separator</th><th>Length</th><th>Confidence</th><th>Matches/Total</th></tr></thead><tbody>`;
+      for (const c of r.candidates) {
+        html += `<tr><td><code style="color:var(--cyan)">${esc(c.separator)}</code></td>
+          <td>${c.separatorLen}</td><td>${c.confidence}%</td><td>${c.matches}/${c.total}</td></tr>`;
+      }
+      html += `</tbody></table>`;
+    }
+    return html + `</div>`;
+  }
+
+  let html = `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon cyan">🧹</div>
+      <div class="card-title cyan">Interleaved Noise Pattern Stripper</div>
+      <span class="tag tag-green">✅ Pattern Detected</span>
+    </div>
+    <div class="alert alert-cyan" style="margin-bottom:16px">
+      <span class="alert-icon">🔍</span>
+      <div>Separator <code style="color:var(--cyan);font-size:1rem">${esc(r.separator)}</code>
+      (${r.separatorLen} char${r.separatorLen !== 1 ? 's' : ''}) found between every real character —
+      <strong style="color:var(--green)">${r.noisePercent}%</strong> of input is noise.</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <span class="stat-label">Separator</span>
+        <span class="stat-value cyan" style="font-size:1.1rem">${esc(r.separator)}</span>
+        <span class="stat-sub">length ${r.separatorLen}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Confidence</span>
+        <span class="stat-value ${r.confidence === 100 ? 'green' : 'yellow'}">${r.confidence}%</span>
+        <span class="stat-sub">${r.matches} / ${r.total} positions</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Original Length</span>
+        <span class="stat-value purple">${r.originalLength}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Cleaned Length</span>
+        <span class="stat-value green">${r.cleanedLength}</span>
+      </div>
+    </div>
+  </div>`;
+
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon green">✅</div>
+      <div class="card-title green">Cleaned Output</div>
+      <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(r.cleaned)})">📋 Copy</button>
+    </div>
+    <div class="code-block" style="font-size:1rem;letter-spacing:0.04em;color:var(--cyan)">${esc(r.cleaned)}</div>
+  </div>`;
+
+  html += `<div class="card">
+    <div class="card-header">
+      <div class="panel-icon purple">🔬</div>
+      <div class="card-title purple">Annotated View</div>
+      <span style="font-size:0.72rem;color:var(--text-muted)">
+        <span style="color:var(--cyan)">■</span> real &nbsp;
+        <span style="color:var(--purple);opacity:0.6">■</span> noise stripped
+      </span>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:2.4;word-break:break-all;padding:4px 0">`;
+  for (const seg of r.segments) {
+    html += `<span style="color:var(--cyan);font-weight:700">${esc(seg.real)}</span>`;
+    if (seg.noise) {
+      html += `<span style="color:var(--purple);opacity:0.45;font-size:0.7rem" title="noise: ${esc(seg.noise)}">${esc(seg.noise)}</span>`;
+    }
+  }
+  html += `</div></div>`;
+
+  if (r.topCandidates && r.topCandidates.length > 1) {
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon yellow">📊</div>
+        <div class="card-title yellow">All Candidates Scored</div>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Separator</th><th>Length</th><th>Confidence</th><th>Matches</th><th>Total</th></tr></thead>
+        <tbody>`;
+    for (let i = 0; i < r.topCandidates.length; i++) {
+      const c = r.topCandidates[i];
+      const best = i === 0;
+      html += `<tr style="${best ? 'background:rgba(0,229,255,0.05)' : ''}">
+        <td><code style="color:${best ? 'var(--cyan)' : 'var(--text-secondary)'}">${esc(c.separator)}</code>
+          ${best ? '<span class="tag tag-green" style="margin-left:6px;font-size:0.65rem">chosen</span>' : ''}</td>
+        <td style="color:var(--text-secondary)">${c.separatorLen}</td>
+        <td style="color:${c.confidence>=95?'var(--green)':c.confidence>=75?'var(--yellow)':'var(--red)'}">${c.confidence}%</td>
+        <td>${c.matches}</td><td>${c.total}</td>
+      </tr>`;
+    }
+    html += `</tbody></table></div>`;
+  }
+
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 8: AI AUTO-ANALYZER
+// ═══════════════════════════════════════════════════════════════════
+
+let _aiMode = 'local'; // 'local' | 'gemini'
+
+function setAIMode(mode) {
+  _aiMode = mode;
+  document.getElementById('ai-mode-local')?.classList.toggle('active-local', mode === 'local');
+  document.getElementById('ai-mode-gemini')?.classList.toggle('active-gemini', mode === 'gemini');
+  runCurrentModule();
+}
+
+function renderAutoAnalyzer(input, body) {
+  // Show mode toggle header immediately
+  const ranks = ['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+
+  const header = `<div class="card" style="border-color:rgba(185,128,255,0.25);background:linear-gradient(135deg,rgba(185,128,255,0.05),rgba(244,114,182,0.03))">
+    <div class="card-header">
+      <div class="panel-icon" style="background:linear-gradient(135deg,rgba(185,128,255,0.25),rgba(244,114,182,0.2));box-shadow:0 0 12px rgba(185,128,255,0.3)">🤖</div>
+      <div class="card-title" style="background:linear-gradient(90deg,var(--purple),#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">AI Auto-Analyzer</div>
+        <span class="tag" style="background:rgba(185,128,255,0.15);color:var(--purple);border:1px solid rgba(185,128,255,0.3)">✦ Powered by Gemini 2.5 Flash</span>
+    </div>
+    <div class="ai-mode-toggle">
+      <button class="ai-mode-btn ${_aiMode==='local'?'active-local':''}" id="ai-mode-local" onclick="setAIMode('local')">
+        🖥️ Local Heuristic AI
+      </button>
+      <button class="ai-mode-btn ${_aiMode==='gemini'?'active-gemini':''}" id="ai-mode-gemini" onclick="setAIMode('gemini')">
+        ✨ Gemini 2.5 Flash
+      </button>
+    </div>
+  </div>`;
+
+  if (_aiMode === 'local') {
+    // ── Local Mode ──────────────────────────────────────────────────
+    const r = OD.autoAnalyze(input);
+    if (r.error) {
+      body.innerHTML = header + `<div class="card"><div class="alert alert-red"><span class="alert-icon">❌</span><div>${esc(r.error)}</div></div></div>`;
+      return;
+    }
+
+    // Fingerprints
+    let fp = '';
+    if (r.fingerprints.length) {
+      fp = `<div class="card"><div class="card-header"><div class="panel-icon cyan">🔍</div><div class="card-title cyan">Pattern Fingerprints Detected</div></div><div style="display:flex;flex-wrap:wrap;gap:8px">`;
+      for (const f of r.fingerprints) {
+        const col = f.confidence >= 90 ? 'var(--green)' : f.confidence >= 70 ? 'var(--cyan)' : 'var(--yellow)';
+        fp += `<span class="tag" style="border-color:${col};color:${col};background:${col}1a">${f.name} ${f.confidence}%</span>`;
+      }
+      fp += `</div></div>`;
+    }
+
+    // Candidates
+    let cands = `<div class="card"><div class="card-header"><div class="panel-icon purple">📊</div><div class="card-title purple">Ranked Detection Results</div><span style="font-size:0.72rem;color:var(--text-muted)">${r.candidates.length} decoders tried</span></div>`;
+    for (let i = 0; i < r.candidates.length; i++) {
+      const c = r.candidates[i];
+      const col = c.confidence >= 75 ? 'var(--green)' : c.confidence >= 45 ? 'var(--yellow)' : 'var(--red)';
+      cands += `<div class="candidate-row">
+        <span class="candidate-rank">${ranks[i] || (i+1)}</span>
+        <div class="candidate-info">
+          <div class="candidate-method">${c.icon} ${esc(c.method)}</div>
+          <div class="candidate-bar-wrap"><div class="candidate-bar-fill" style="width:${c.confidence}%"></div></div>
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:3px">${esc(c.explanation)}</div>
+        </div>
+        <span class="candidate-conf" style="color:${col}">${c.confidence}%</span>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="copyText(${JSON.stringify(c.decoded||'')})" title="Copy decoded">📋</button>
+      </div>`;
+    }
+    cands += `</div>`;
+
+    // Decode chain
+    let chain = '';
+    if (r.decodeChain.length > 0) {
+      chain = `<div class="card"><div class="card-header"><div class="panel-icon yellow">🔗</div><div class="card-title yellow">Multi-Layer Decode Chain</div></div><div class="chain-wrap"><span class="chain-node">Raw Input</span>`;
+      for (const step of r.decodeChain) {
+        chain += `<span class="chain-arrow">──${esc(step.method)}──▶</span><span class="chain-node">${esc(step.decoded.slice(0,30))}${step.decoded.length>30?'…':''}</span>`;
+      }
+      chain += `</div></div>`;
+    }
+
+    // Final output
+    const finalCard = `<div class="card" style="border-color:rgba(0,229,255,0.25)">
+      <div class="card-header">
+        <div class="panel-icon green">✅</div>
+        <div class="card-title green">Final Decoded Output</div>
+        <span class="tag tag-green">${esc(r.topMethod)} — ${r.topConfidence}%</span>
+        <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(r.finalOutput)})">📋 Copy</button>
+      </div>
+      <div class="code-block" style="font-size:1rem;letter-spacing:0.04em;color:var(--cyan)">${esc(r.finalOutput)}</div>
+    </div>`;
+
+    body.innerHTML = header + fp + cands + chain + finalCard;
+
+  } else {
+    // ── Gemini Mode ─────────────────────────────────────────────────
+    body.innerHTML = header + `<div class="ai-spinner"><div class="spinner-ring"></div><div>Sending to Gemini 2.5 Flash…</div></div>`;
+
+    OD.analyzeWithGemini(input).then(r => {
+      let html = header;
+
+      // Summary banner
+      html += `<div class="card" style="border-color:rgba(185,128,255,0.3);background:linear-gradient(135deg,rgba(185,128,255,0.06),rgba(244,114,182,0.03))">
+        <div class="card-header">
+          <div class="panel-icon" style="background:linear-gradient(135deg,rgba(185,128,255,0.3),rgba(244,114,182,0.2))">✨</div>
+          <div class="card-title" style="color:var(--purple)">Gemini Analysis Summary</div>
+          <span class="tag" style="background:rgba(75,222,128,0.15);color:var(--green);border-color:rgba(75,222,128,0.3)">
+            Overall ${r.overall_confidence ?? '?'}% confidence
+          </span>
+        </div>
+        <div style="color:var(--text-secondary);font-size:0.88rem;line-height:1.6">${esc(r.summary||'')}</div>
+      </div>`;
+
+      // Layer-by-layer decode steps
+      if (r.layers && r.layers.length) {
+        html += `<div class="card"><div class="card-header"><div class="panel-icon purple">🔗</div><div class="card-title purple">Decode Layers (Step-by-Step)</div></div>`;
+        for (const layer of r.layers) {
+          html += `<div class="gemini-layer">
+            <div class="gemini-layer-header">
+              <div class="gemini-step-badge">${layer.step}</div>
+              <span class="gemini-method">${esc(layer.method||'Unknown')}</span>
+              <span class="gemini-conf-tag">${layer.confidence??'?'}% conf</span>
+            </div>
+            <div class="gemini-explanation">${esc(layer.explanation||'')}</div>
+            <div class="gemini-output">${esc(layer.output||'')}</div>
+          </div>`;
+        }
+        html += `</div>`;
+      }
+
+      // Final output
+      html += `<div class="card" style="border-color:rgba(185,128,255,0.3)">
+        <div class="card-header">
+          <div class="panel-icon green">✅</div>
+          <div class="card-title green">Final Decoded Output</div>
+          <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(r.final_output||'')})">📋 Copy</button>
+        </div>
+        <div class="code-block" style="font-size:1rem;color:var(--cyan)">${esc(r.final_output||'(empty)')}</div>
+      </div>`;
+
+      // Notes
+      if (r.notes) {
+        html += `<div class="card"><div class="card-header"><div class="panel-icon yellow">📝</div><div class="card-title yellow">Gemini Notes</div></div>
+          <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6">${esc(r.notes)}</div></div>`;
+      }
+
+      body.innerHTML = html;
+    }).catch(err => {
+      const m = err.message || '';
+      let errCard = '';
+
+      if (m === 'NOKEY') {
+        errCard = `<div class="card"><div class="alert" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.3)">
+          <span class="alert-icon">🔑</span>
+          <div>
+            <strong style="color:var(--yellow)">API Key Missing</strong><br>
+            Open <code>config.js</code> and replace <code>PASTE_YOUR_GEMINI_API_KEY_HERE</code> with your real key.<br>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--cyan)">Get a free key at aistudio.google.com →</a>
+          </div>
+        </div></div>`;
+
+      } else if (m === 'BADKEY') {
+        errCard = `<div class="card"><div class="alert" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.3)">
+          <span class="alert-icon">⚠️</span>
+          <div>
+            <strong style="color:var(--yellow)">Invalid API Key Format</strong><br>
+            Gemini keys must start with <code>AIzaSy</code> and be 39 characters long.<br>
+            The key in your <code>config.js</code> doesn't match this format.<br>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--cyan)">Generate a correct key at Google AI Studio →</a>
+          </div>
+        </div></div>`;
+
+      } else if (err.isQuotaZero || m.includes('QUOTA_ZERO')) {
+        errCard = `<div class="card"><div class="alert alert-red">
+          <span class="alert-icon">🚫</span>
+          <div>
+            <strong>Gemini API Not Enabled for This Project</strong><br>
+            Your key's project has <strong>limit: 0</strong> — the Generative Language API is not active.<br><br>
+            <strong>Fix (2 minutes):</strong><br>
+            1. Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--cyan)">aistudio.google.com/app/apikey</a><br>
+            2. Click <strong>"Create API key"</strong> → <strong>"Create API key in new project"</strong><br>
+            3. Copy the new key (starts with <code>AIzaSy</code>)<br>
+            4. Paste it in <code>config.js</code> → save → hard refresh (<kbd>Ctrl+Shift+R</kbd>)
+          </div>
+        </div></div>`;
+
+      } else if (err.isQuota || m.startsWith('QUOTA_EXCEEDED')) {
+        const retryIn = err.retryIn || '';
+        errCard = `<div class="card"><div class="alert alert-red">
+          <span class="alert-icon">⏳</span>
+          <div>
+            <strong>Rate Limit Reached</strong> ${retryIn ? `— <code>${retryIn}</code>` : ''}<br>
+            Free tier: 15 requests/minute, 1500 requests/day.<br>
+            Wait a moment and try again — or use <strong>Local Heuristic AI</strong> mode which has no limits.
+          </div>
+        </div></div>`;
+
+      } else {
+        errCard = `<div class="card"><div class="alert alert-red">
+          <span class="alert-icon">❌</span>
+          <div><strong>Gemini Error:</strong> ${esc(m)}</div>
+        </div></div>`;
+      }
+
+      body.innerHTML = header + errCard;
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 9: HASH ANALYZER & CRACKER
+// ═══════════════════════════════════════════════════════════════════
+
+function renderHashCracker(input, body) {
+  body.innerHTML = `<div class="ai-spinner"><div class="spinner-ring" style="border-top-color:var(--red)"></div><div>Analyzing hash…</div></div>`;
+
+  OD.analyzeHash(input.trim()).then(r => {
+    const id = r.identified;
+    let html = '';
+
+    // ── Identification card ────────────────────────────────────────────────
+    const secColor = id.matches.length === 0 ? 'var(--text-muted)' :
+      id.matches[0]?.bits && id.matches[0].bits <= 128 ? 'var(--red)' :
+      id.matches[0]?.bits && id.matches[0].bits <= 256 ? 'var(--yellow)' : 'var(--green)';
+
+    html += `<div class="card" style="border-color:rgba(248,113,113,0.25);background:rgba(248,113,113,0.03)">
+      <div class="card-header">
+        <div class="panel-icon" style="background:rgba(248,113,113,0.15)">#️⃣</div>
+        <div class="card-title" style="color:var(--red)">Hash Identification</div>
+        <span class="tag" style="background:rgba(248,113,113,0.12);color:var(--red);border-color:rgba(248,113,113,0.3)">${id.hashLength} chars</span>
+        ${id.isHex ? '<span class="tag" style="color:var(--cyan);border-color:rgba(0,229,255,0.3)">hex</span>' : ''}
+      </div>
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+        <div class="stat-item"><div class="stat-value" style="color:var(--red)">${esc(id.mostLikely)}</div><div class="stat-label">Most Likely</div></div>
+        <div class="stat-item"><div class="stat-value">${id.hashLength * 4}</div><div class="stat-label">Bit Length</div></div>
+        <div class="stat-item"><div class="stat-value" style="color:${secColor}">${id.matches[0]?.bits ? (id.matches[0].bits <= 128 ? '⚠️ Low' : id.matches[0].bits <= 256 ? '🟡 Medium' : '🟢 High') : '❓'}</div><div class="stat-label">Security</div></div>
+      </div>
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px">All matching algorithms:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${id.possibleAlgos.map((name, i) => `<span class="tag" style="${i===0?'color:var(--red);border-color:rgba(248,113,113,0.5);background:rgba(248,113,113,0.1)':''}">${esc(name)}</span>`).join('')}
+        ${id.possibleAlgos.length === 0 ? '<span style="color:var(--text-muted);font-size:0.8rem">No known pattern matched — may be custom or salted.</span>' : ''}
+      </div>
+    </div>`;
+
+    // ── Hash value display ─────────────────────────────────────────────────
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="panel-icon cyan">🔍</div>
+        <div class="card-title cyan">Hash Value</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(id.hash)})">📋 Copy</button>
+      </div>
+      <div class="code-block" style="word-break:break-all;letter-spacing:0.08em;font-size:0.9rem;color:var(--cyan)">${esc(id.hash)}</div>
+    </div>`;
+
+    // ── Dictionary Attack Result ───────────────────────────────────────────
+    if (r.cracked) {
+      html += `<div class="card" style="border-color:rgba(74,222,128,0.4);background:rgba(74,222,128,0.05)">
+        <div class="card-header">
+          <div class="panel-icon green">✅</div>
+          <div class="card-title green">CRACKED! — Dictionary Attack</div>
+          <span class="tag tag-green">algo: ${esc(r.cracked.algo)}</span>
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">Plaintext found:</div>
+        <div class="code-block" style="font-size:1.4rem;color:var(--green);text-align:center;font-weight:700;letter-spacing:0.1em">${esc(r.cracked.plaintext)}</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%;justify-content:center" onclick="copyText(${JSON.stringify(r.cracked.plaintext)})">📋 Copy Plaintext</button>
+      </div>`;
+    } else {
+      const stats = r.dictStats;
+      const triedAlgos = stats?.algos || [];
+      html += `<div class="card">
+        <div class="card-header">
+          <div class="panel-icon yellow">🔒</div>
+          <div class="card-title yellow">Dictionary Attack — Not Found</div>
+          <span class="tag" style="color:var(--yellow);border-color:rgba(251,191,36,0.3)">${r.wordlistSize} words tried</span>
+        </div>
+        <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7">
+          Tried <strong style="color:var(--text-primary)">${r.wordlistSize}</strong> common passwords against:
+          <span style="color:var(--cyan)">${triedAlgos.map(a => `<code>${a}</code>`).join(', ') || 'N/A (MD5 not supported in browser — use online lookup)'}</span><br>
+          Hash not found in built-in wordlist. Try the <strong>Online Lookup</strong> button for MD5/SHA-1 rainbow tables.
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="doOnlineLookup(${JSON.stringify(id.hash)}, this)">🌐 Online Rainbow Table Lookup</button>
+        <div id="online-result" style="margin-top:10px"></div>
+      </div>`;
+    }
+
+    // ── Security advisory ──────────────────────────────────────────────────
+    const advice = {
+      'MD5':     { color: 'var(--red)',    icon: '🚨', text: 'MD5 is cryptographically broken. Collisions can be generated in seconds. Never use for passwords.' },
+      'MD4':     { color: 'var(--red)',    icon: '🚨', text: 'MD4 is severely broken. Not suitable for any security purpose.' },
+      'NTLM':    { color: 'var(--red)',    icon: '🚨', text: 'NTLM (Windows hash) is trivially cracked with rainbow tables. Use NTLMv2 or Kerberos.' },
+      'SHA-1':   { color: 'var(--orange)', icon: '⚠️', text: 'SHA-1 is deprecated (SHAttered collision 2017). Avoid for signatures and certificates.' },
+      'SHA-256': { color: 'var(--green)',  icon: '✅', text: 'SHA-256 is still secure for integrity checking, but use bcrypt/Argon2 for passwords.' },
+      'SHA-512': { color: 'var(--green)',  icon: '✅', text: 'SHA-512 is considered secure. Still use bcrypt/Argon2/PBKDF2 for password storage.' },
+      'bcrypt':  { color: 'var(--green)',  icon: '🛡️', text: 'bcrypt is a strong adaptive password hashing function. Excellent choice for passwords.' },
+      'Argon2':  { color: 'var(--green)',  icon: '🛡️', text: 'Argon2 (winner of Password Hashing Competition 2015) is the gold standard for password storage.' },
+    };
+    const adv = advice[id.mostLikely] || advice[id.possibleAlgos[0]];
+    if (adv) {
+      html += `<div class="card" style="border-color:${adv.color}26">
+        <div class="card-header"><div class="panel-icon" style="background:${adv.color}20">${adv.icon}</div>
+        <div class="card-title" style="color:${adv.color}">Security Advisory</div></div>
+        <div style="font-size:0.84rem;color:var(--text-secondary);line-height:1.7">${esc(adv.text)}</div>
+      </div>`;
+    }
+
+    body.innerHTML = html;
+  }).catch(err => {
+    body.innerHTML = `<div class="card"><div class="alert alert-red"><span class="alert-icon">❌</span><div>${esc(err.message)}</div></div></div>`;
+  });
+}
+
+function doOnlineLookup(hash, btn) {
+  btn.disabled = true;
+  btn.textContent = '⏳ Looking up…';
+  OD.onlineLookup(hash).then(res => {
+    const el = document.getElementById('online-result');
+    if (!el) return;
+    if (res.online && res.plaintext) {
+      el.innerHTML = `<div class="alert" style="background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.4)">
+        <span class="alert-icon">✅</span>
+        <div><strong style="color:var(--green)">Found via ${esc(res.source||'online DB')}:</strong> <code>${esc(res.plaintext)}</code></div>
+      </div>`;
+    } else if (res.online && res.identified) {
+      el.innerHTML = `<div class="alert" style="background:rgba(0,229,255,0.06);border-color:rgba(0,229,255,0.3)">
+        <span class="alert-icon">ℹ️</span><div>Identified online as: <code>${esc(JSON.stringify(res.identified))}</code></div>
+      </div>`;
+    } else {
+      el.innerHTML = `<div class="alert" style="background:rgba(251,191,36,0.06);border-color:rgba(251,191,36,0.3)">
+        <span class="alert-icon">🔒</span><div>Not found in online databases. ${esc(res.reason||'')}</div>
+      </div>`;
+    }
+    btn.textContent = '🌐 Online Rainbow Table Lookup';
+    btn.disabled = false;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODULE 10: ENCRYPTION BREAKER
+// ═══════════════════════════════════════════════════════════════════
+
+let _encTab = 'auto'; // active tab
+
+function setEncTab(tab) {
+  _encTab = tab;
+  document.querySelectorAll('.enc-tab').forEach(b => b.classList.remove('enc-tab-active'));
+  document.getElementById(`enc-tab-${tab}`)?.classList.add('enc-tab-active');
+  const input = document.querySelector('.input-textarea')?.value || '';
+  const key   = document.getElementById('enc-key-input')?.value || '';
+  const outDiv = document.getElementById('enc-output');
+  if (outDiv) renderEncTabContent(input, key, outDiv);
+}
+
+function renderEncTabContent(input, key, outDiv) {
+  const OD = window.OmniDecoder;
+
+  if (_encTab === 'auto') {
+    // Run vigenere + affine + rail + rot and pick best
+    const rotRes  = OD.rotNFamily(input);
+    const affRes  = OD.breakAffine(input);
+    const railRes = OD.breakRailFence(input);
+    const vigRes  = OD.breakVigenere(input);
+
+    const candidates = [
+      { name: 'ROT-N', best: rotRes[0], score: rotRes[0]?.score },
+      { name: 'Affine', best: affRes.best, score: affRes.best?.score },
+      { name: 'Rail Fence', best: railRes.best, score: railRes.best?.score },
+    ];
+    if (!vigRes.error) candidates.push({ name: 'Vigenere', best: vigRes.best, score: parseFloat(vigRes.best?.englishScore||0) });
+    candidates.sort((a, b) => (b.score||0) - (a.score||0));
+
+    let html = `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px">Auto-tested 4 cipher families. Highest English-score result shown first.</div>`;
+    for (const c of candidates) {
+      if (!c.best) continue;
+      const dec = c.best.decrypted || c.best.dec || '';
+      const info = c.name === 'ROT-N' ? `ROT-${c.best.rot}` :
+                   c.name === 'Affine' ? `a=${c.best.a}, b=${c.best.b}` :
+                   c.name === 'Vigenere' ? `key="${c.best.key}"` :
+                   `rails=${c.best.rails}`;
+      const col = (c.score||0) > 0.05 ? 'var(--green)' : (c.score||0) > 0.02 ? 'var(--yellow)' : 'var(--red)';
+      html += `<div class="candidate-row" style="margin-bottom:8px">
+        <div class="candidate-info">
+          <div class="candidate-method">${esc(c.name)} <span style="font-size:0.7rem;color:var(--text-muted)">(${esc(info)})</span></div>
+          <div class="candidate-bar-wrap"><div class="candidate-bar-fill" style="width:${Math.min(100,(c.score||0)*1000)}%"></div></div>
+          <div style="font-family:monospace;font-size:0.8rem;color:var(--cyan);margin-top:4px;word-break:break-all">${esc(dec.slice(0,120))}${dec.length>120?'…':''}</div>
+        </div>
+        <span class="candidate-conf" style="color:${col}">${((c.score||0)*100).toFixed(1)}%</span>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="copyText(${JSON.stringify(dec)})" title="Copy">📋</button>
+      </div>`;
+    }
+    outDiv.innerHTML = html;
+
+  } else if (_encTab === 'vigenere') {
+    const res = OD.breakVigenere(input);
+    if (res.error) { outDiv.innerHTML = `<div class="alert alert-red"><span class="alert-icon">⚠️</span><div>${esc(res.error)}</div></div>`; return; }
+    let html = `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px">Key length found via Index of Coincidence (IC). English IC ≈ 0.065.</div>`;
+    for (const a of res.attempts) {
+      html += `<div class="gemini-layer" style="margin-bottom:10px">
+        <div class="gemini-layer-header">
+          <div class="gemini-step-badge" style="background:linear-gradient(135deg,var(--red),var(--orange))">${a.keyLen}</div>
+          <span class="gemini-method">Key: <code style="color:var(--cyan)">${esc(a.key)}</code></span>
+          <span class="gemini-conf-tag" style="background:rgba(248,113,113,0.12);color:var(--red)">IC: ${a.ic}</span>
+        </div>
+        <div class="gemini-explanation">English score: ${a.englishScore}</div>
+        <div class="gemini-output">${esc(a.decrypted.slice(0,200))}${a.decrypted.length>200?'…':''}</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="copyText(${JSON.stringify(a.decrypted)})">📋 Copy</button>
+      </div>`;
+    }
+    // Manual key input
+    html += `<div class="card" style="margin-top:4px">
+      <div class="card-header"><div class="panel-icon cyan">✏️</div><div class="card-title cyan">Try Custom Key</div></div>
+      <div style="display:flex;gap:8px">
+        <input id="vig-custom-key" class="input-field" style="flex:1;font-family:monospace" placeholder="Enter known key…" />
+        <button class="btn btn-primary btn-sm" onclick="const k=document.getElementById('vig-custom-key').value;document.getElementById('vig-custom-out').textContent=OD.vigenereDecrypt(${JSON.stringify(input)},k)">Decrypt</button>
+      </div>
+      <div id="vig-custom-out" class="code-block" style="margin-top:10px;min-height:40px;color:var(--cyan)"></div>
+    </div>`;
+    outDiv.innerHTML = html;
+
+  } else if (_encTab === 'affine') {
+    const res = OD.breakAffine(input);
+    let html = `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px">Tested all 312 valid (a,b) combinations. Ranked by English frequency score.</div>`;
+    for (const r of res.results) {
+      html += `<div class="candidate-row" style="margin-bottom:6px">
+        <div class="candidate-info">
+          <div class="candidate-method">a=<strong>${r.a}</strong>, b=<strong>${r.b}</strong></div>
+          <div style="font-family:monospace;font-size:0.8rem;color:var(--cyan);margin-top:3px;word-break:break-all">${esc(r.decrypted.slice(0,120))}</div>
+        </div>
+        <span class="candidate-conf" style="color:${r.score>0.05?'var(--green)':r.score>0.02?'var(--yellow)':'var(--red)'}">${(r.score*100).toFixed(2)}%</span>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="copyText(${JSON.stringify(r.decrypted)})">📋</button>
+      </div>`;
+    }
+    outDiv.innerHTML = html;
+
+  } else if (_encTab === 'railfence') {
+    const res = OD.breakRailFence(input);
+    let html = `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px">Tested 2–10 rails. Ranked by English frequency score.</div>`;
+    for (const r of res.results) {
+      html += `<div class="candidate-row" style="margin-bottom:6px">
+        <div class="candidate-info">
+          <div class="candidate-method">Rails: <strong>${r.rails}</strong></div>
+          <div style="font-family:monospace;font-size:0.8rem;color:var(--cyan);margin-top:3px">${esc(r.decrypted.slice(0,120))}</div>
+        </div>
+        <span class="candidate-conf" style="color:${r.score>0.05?'var(--green)':r.score>0.02?'var(--yellow)':'var(--red)'}">${(r.score*100).toFixed(2)}%</span>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="copyText(${JSON.stringify(r.decrypted)})">📋</button>
+      </div>`;
+    }
+    outDiv.innerHTML = html;
+
+  } else if (_encTab === 'atbash') {
+    const dec = OD.atbashDecrypt(input);
+    outDiv.innerHTML = `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px">Atbash maps A↔Z, B↔Y, C↔X… — it is its own inverse.</div>
+      <div class="code-block" style="font-size:1rem;color:var(--cyan)">${esc(dec)}</div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="copyText(${JSON.stringify(dec)})">📋 Copy</button>`;
+
+  } else if (_encTab === 'rot') {
+    const results = OD.rotNFamily(input);
+    let html = `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px">All 25 ROT-N shifts, ranked by English score.</div>`;
+    for (const r of results) {
+      html += `<div class="candidate-row" style="margin-bottom:5px">
+        <div class="candidate-info">
+          <div class="candidate-method">ROT-<strong>${r.rot}</strong>${r.rot===13?' (ROT13)':''}</div>
+          <div style="font-family:monospace;font-size:0.8rem;color:var(--cyan);margin-top:2px">${esc(r.decrypted.slice(0,100))}</div>
+        </div>
+        <span class="candidate-conf" style="color:${r.score>0.05?'var(--green)':r.score>0.02?'var(--yellow)':'var(--red)'}">${(r.score*100).toFixed(2)}%</span>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="copyText(${JSON.stringify(r.decrypted)})">📋</button>
+      </div>`;
+    }
+    outDiv.innerHTML = html;
+
+  } else if (_encTab === 'columnar') {
+    const dec = key ? OD.columnarDecrypt(input, key) : null;
+    outDiv.innerHTML = `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px">Enter the keyword used for columnar transposition.</div>
+      ${dec ? `<div class="code-block" style="color:var(--cyan)">${esc(dec)}</div><button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="copyText(${JSON.stringify(dec)})">📋 Copy</button>` : '<div class="alert" style="border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.05)"><span class="alert-icon">💡</span><div>Type a key in the field above and click Decrypt.</div></div>'}`;
+
+  } else if (_encTab === 'beaufort') {
+    const dec = key ? OD.beaufortDecrypt(input, key) : null;
+    outDiv.innerHTML = `<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px">Beaufort is a variant of Vigenere where encryption and decryption use the same operation.</div>
+      ${dec ? `<div class="code-block" style="color:var(--cyan)">${esc(dec)}</div><button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="copyText(${JSON.stringify(dec)})">📋 Copy</button>` : '<div class="alert" style="border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.05)"><span class="alert-icon">💡</span><div>Type a key in the field above and click Decrypt.</div></div>'}`;
+  }
+}
+
+function renderEncryptionBreaker(input, body) {
+  const TABS = [
+    { id:'auto',     label:'🔮 Auto-Detect' },
+    { id:'vigenere', label:'🔑 Vigenere'     },
+    { id:'affine',   label:'⚙️ Affine'       },
+    { id:'railfence',label:'🚂 Rail Fence'   },
+    { id:'atbash',   label:'🔄 Atbash'       },
+    { id:'rot',      label:'🔁 ROT-N (1-25)' },
+    { id:'columnar', label:'📊 Columnar'     },
+    { id:'beaufort', label:'⚓ Beaufort'     },
+  ];
+
+  const tabBar = TABS.map(t =>
+    `<button class="enc-tab${_encTab===t.id?' enc-tab-active':''}" id="enc-tab-${t.id}" onclick="setEncTab('${t.id}')">${t.label}</button>`
+  ).join('');
+
+  const needsKey = ['columnar','beaufort'].includes(_encTab);
+
+  body.innerHTML = `
+    <div class="card" style="border-color:rgba(248,113,113,0.25);background:rgba(248,113,113,0.03)">
+      <div class="card-header">
+        <div class="panel-icon" style="background:rgba(248,113,113,0.15)">🔓</div>
+        <div class="card-title" style="color:var(--red)">Encryption Breaker</div>
+        <span class="tag" style="color:var(--red);border-color:rgba(248,113,113,0.3)">8 Cipher Families</span>
+      </div>
+      <div class="enc-tab-bar">${tabBar}</div>
+      ${needsKey ? `<div style="display:flex;gap:8px;margin-bottom:16px;align-items:center">
+        <input id="enc-key-input" class="input-field" style="flex:1;font-family:monospace" placeholder="Cipher key / keyword…" oninput="renderEncTabContent(${JSON.stringify(input)},this.value,document.getElementById('enc-output'))" />
+      </div>` : ''}
+    </div>
+    <div id="enc-output" class="card" style="min-height:120px"></div>`;
+
+  renderEncTabContent(input, '', document.getElementById('enc-output'));
+}
+
+// ─── Keyboard Shortcut ────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    runCurrentModule();
+  }
+});
+
+// ─── Module button active class correction ────────────────────────
+selectModule(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "omni-decoder",
+  "version": "0.1.0",
+  "description": "OmniDecoder — semantic steganography and encoding analysis toolkit",
+  "main": "decoder.js",
+  "scripts": {
+    "start": "node ./gemini_proxy.js",
+    "start-proxy": "node ./gemini_proxy.js",
+    "run": "node ./run_decoder.js",
+    "test": "node ./run_decoder.js",
+    "prepare": "echo Set GEMINI_API_KEY before starting the local server"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {}
+}
